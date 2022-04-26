@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_signin"
+    app:startDestination="@id/fullnameFragment">
+
+    <fragment
+        android:id="@+id/fullnameFragment"
+        android:name="com.example.chatapp.fragment.FullnameFragment"
+        android:label="Họ Tên"
+        tools:layout="@layout/fragment_fullname" >
+        <action
+            android:id="@+id/action_fullnameFragment_to_addressFragment"
+            app:destination="@id/addressFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addressFragment"
+        android:name="com.example.chatapp.fragment.AddressFragment"
+        android:label="Địa chỉ và số điện thoại"
+        tools:layout="@layout/fragment_address" >
+        <action
+            android:id="@+id/action_addressFragment_to_usernamePasswordFragment"
+            app:destination="@id/usernamePasswordFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/usernamePasswordFragment"
+        android:name="com.example.chatapp.fragment.UsernamePasswordFragment"
+        android:label="Tên người dùng và mật khẩu"
+        tools:layout="@layout/fragment_username_password" />
+</navigation>
