@@ -1,4 +1,4 @@
-package com.example.chatapp.fragment;
+package com.example.chatapp.fragment.signUpFragment;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -17,24 +17,25 @@ import com.example.chatapp.R;
 import com.example.chatapp.Utils.FirebaseUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 
 import java.util.HashMap;
 import java.util.Map;
 
 
-
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link UsernamePasswordFragment#newInstance} factory method to
+ * Use the {@link username_password#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class UsernamePasswordFragment extends Fragment {
+public class username_password extends Fragment {
 
     Button btnRegister;
     NavController navController;
-    TextInputEditText inpEmail, inpPassword, inpConfirmPassword;
+    TextInputLayout edtEmail, edtPassword, edtConfirmPassword;
 
 
     // TODO: Rename parameter arguments, choose names that match
@@ -46,7 +47,7 @@ public class UsernamePasswordFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public UsernamePasswordFragment() {
+    public username_password() {
         // Required empty public constructor
     }
 
@@ -56,11 +57,11 @@ public class UsernamePasswordFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment UsernamePasswordFragment.
+     * @return A new instance of fragment username_password.
      */
     // TODO: Rename and change types and number of parameters
-    public static UsernamePasswordFragment newInstance(String param1, String param2) {
-        UsernamePasswordFragment fragment = new UsernamePasswordFragment();
+    public static username_password newInstance(String param1, String param2) {
+        username_password fragment = new username_password();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -87,49 +88,40 @@ public class UsernamePasswordFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         btnRegister = view.findViewById(R.id.btnRegister);
-
         navController = Navigation.findNavController(view);
-
-        inpEmail = view.findViewById(R.id.tvEmail);
-        inpPassword = view.findViewById(R.id.tvPassword);
-        inpConfirmPassword = view.findViewById(R.id.tvConfirmPassword);
-
+        edtEmail = view.findViewById(R.id.edt_email);
+        edtPassword = view.findViewById(R.id.edt_pass);
+        edtConfirmPassword = view.findViewById(R.id.edt_pass_confirm);
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String email = inpEmail.getText().toString(),
-                        password = inpPassword.getText().toString(),
-                        confPassword = inpConfirmPassword.getText().toString();
-
+                String Email = edtEmail.getEditText().getText().toString();
+                String Password = edtPassword.getEditText().getText().toString();
+                String ConfPassword = edtConfirmPassword.getEditText().getText().toString();
                 String error = "";
-
-                if (email.isEmpty()) {
+                if (Email.isEmpty()) {
                     error = "Vui lòng điền email!";
-                } else if (password.isEmpty()) {
+                } else if (Password.isEmpty()) {
                     error = "Vui lòng điền mật khẩu!";
-                } else if (confPassword.isEmpty()) {
+                } else if (ConfPassword.isEmpty()) {
                     error = "Vui lòng điền mật khẩu xác nhận!";
-                } else if (!password.equals(confPassword)) {
+                } else if (!Password.equals(ConfPassword)) {
                     error = "mật khẩu xác nhận không trùng khớp!";
                 }
-
                 if (!error.isEmpty()) {
-                    Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
+                    Snackbar.make(v, error, Snackbar.LENGTH_LONG).show();
                     return;
                 }
 
                 Bundle store = getArguments();
 
-                String firstname = store.getString("firstname");
-                String lastname = store.getString("lastname");
-                String address = store.getString("Address");
-                String phone = store.getString("Phone");
-                Double latitude = store.getDouble("latitude", 0);
-                Double longitude = store.getDouble("longitude", 0);
+                String Firstname = store.getString("firstname");
+                String Lastname = store.getString("lastname");
+                String Sex = store.getString("sex");
+                String Phone = store.getString("phone");
 
-                FirebaseUtils.mAuth.createUserWithEmailAndPassword(email, password)
+                FirebaseUtils.mAuth.createUserWithEmailAndPassword(Email, Password)
                         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -139,14 +131,11 @@ public class UsernamePasswordFragment extends Fragment {
                                 }
                                 Map<String, Object> info = new HashMap<>();
 
-                                info.put("firstname", firstname);
-                                info.put("lastname", lastname);
-                                info.put("address", address);
-                                info.put("phone", phone);
-                                info.put("email", email);
-                                info.put("latitude", latitude);
-                                info.put("longitude", longitude);
-
+                                info.put("firstname", Firstname);
+                                info.put("lastname", Lastname);
+                                info.put("sex", Sex);
+                                info.put("phone", Phone);
+                                info.put("email", Email);
                                 FirebaseUtils.databaseReference.child("users").child(FirebaseUtils.mAuth.getUid()).setValue(info).addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
@@ -158,12 +147,9 @@ public class UsernamePasswordFragment extends Fragment {
                                         }
                                     }
                                 });
-
                             }
                         });
             }
         });
-
-
     }
 }

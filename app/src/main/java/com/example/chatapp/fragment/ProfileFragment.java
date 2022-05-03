@@ -1,6 +1,8 @@
 package com.example.chatapp.fragment;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -17,8 +20,15 @@ import com.example.chatapp.R;
 import com.example.chatapp.Utils.LocationServiceTask;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -30,8 +40,8 @@ import java.util.HashMap;
  * create an instance of this fragment.
  */
 public class ProfileFragment extends Fragment {
-    EditText fullnameChange, emailChange, phoneChange, addressChange;
-    Button btnUpdate;
+    TextInputLayout fullnameChange, emailChange, phoneChange, sexChange;
+    Button btnUpdate, btnChangePass;
     FirebaseDatabase fDatabase;
     FirebaseAuth fAuth;
     DatabaseReference databaseReference;
@@ -89,25 +99,27 @@ public class ProfileFragment extends Fragment {
         fDatabase = FirebaseDatabase.getInstance();
         fAuth = FirebaseAuth.getInstance();
         btnUpdate = view.findViewById(R.id.btn_update);
+        btnChangePass = view.findViewById(R.id.btn_change_password);
         fullnameChange = view.findViewById(R.id.fullName_profile);
         emailChange = view.findViewById(R.id.email_profile);
         phoneChange = view.findViewById(R.id.phone_profile);
-        addressChange = view.findViewById(R.id.address_profile);
+        sexChange = view.findViewById(R.id.sex_profile);
         String userID = fAuth.getCurrentUser().getUid();
         fDatabase.getReference().child("users").child(userID).get().addOnSuccessListener(dataSnapshot -> {
             User user = dataSnapshot.getValue(User.class);
             user.setUserID(userID);
-            fullnameChange.setText(user.getLastName() + " " + user.getFirstName());
-            emailChange.setText(user.getEmail());
-            phoneChange.setText(user.getPhone());
-            addressChange.setText(user.getAddress());
+            fullnameChange.getEditText().setText(user.getFirstname() + " " + user.getLastname());
+            emailChange.getEditText().setText(user.getEmail());
+            phoneChange.getEditText().setText(user.getPhone());
+            sexChange.getEditText().setText(user.getSex());
+        });
+        btnChangePass.setOnClickListener(v -> {
+            showChangePasswordDialog();
         });
         btnUpdate.setOnClickListener(v -> {
-            String fullName = fullnameChange.getText().toString();
-            String email = emailChange.getText().toString();
-            String phone = phoneChange.getText().toString();
-            String address = addressChange.getText().toString();
-
+            String fullName = fullnameChange.getEditText().getText().toString();
+            String email = emailChange.getEditText().getText().toString();
+            String phone = phoneChange.getEditText().getText().toString();
             String lastName = "";
             String firstName = "";
             if (fullName.split("\\w+").length > 1) {
@@ -116,30 +128,78 @@ public class ProfileFragment extends Fragment {
             } else {
                 firstName = fullName;
             }
-
-            LatLng latLng = LocationServiceTask.getLatLngFromAddress(getContext(), address.toString());
             HashMap<String, Object> newData = new HashMap<>();
             newData.put("firstname", firstName);
             newData.put("lastname", lastName);
             newData.put("email", email);
             newData.put("phone", phone);
-            newData.put("address", address);
-            newData.put("latitude", latLng.latitude);
-            newData.put("longitude", latLng.longitude);
-
-
             databaseReference = fDatabase.getReference("users");
             databaseReference.child(userID).updateChildren(newData).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
-                    fullnameChange.setText(fullName);
-                    emailChange.setText(email);
-                    phoneChange.setText(phone);
-                    addressChange.setText(address);
-
+                    fullnameChange.getEditText().setText(fullName);
+                    emailChange.getEditText().setText(email);
+                    phoneChange.getEditText().setText(phone);
                     Toast.makeText(getActivity().getApplicationContext(), task.isSuccessful() ? "Change Info Successfull" : task.getException().getMessage(), Toast.LENGTH_LONG);
                 }
             });
+        });
+    }
+
+    private void showChangePasswordDialog() {
+        View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_change_password, null);
+        TextInputLayout oldPass, passUpdate;
+        Button btnUpdatePassword;
+        passUpdate = view.findViewById(R.id.edt_pass_update);
+        oldPass = view.findViewById(R.id.edt_old_pass);
+        btnUpdatePassword = view.findViewById(R.id.btn_update_new_password);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setView(view);
+        final AlertDialog dialog = builder.create();
+        builder.create().show();
+        btnUpdatePassword.setOnClickListener(v -> {
+            String OldPass = oldPass.getEditText().getText().toString().trim();
+            String PassUpdate = passUpdate.getEditText().getText().toString().trim();
+            if (OldPass.isEmpty()) {
+                Snackbar.make(v, "Vui lòng nhập lại mật khẩu cũ!", Snackbar.LENGTH_LONG).show();
+                return;
+            }
+            if (PassUpdate.isEmpty()) {
+                Snackbar.make(v, "Vui lòng nhập đầy đủ thông tin!", Snackbar.LENGTH_LONG).show();
+                return;
+            }
+            if (PassUpdate.length() < 8) {
+                Snackbar.make(v, "Độ dài mật khẩu trên 8 ký tự.", Snackbar.LENGTH_LONG).show();
+                return;
+            }
+            dialog.dismiss();
+            updatePass(OldPass, PassUpdate);
+        });
+    }
+
+    private void updatePass(String oldPass, String passUpdate) {
+        FirebaseUser user = fAuth.getCurrentUser();
+        AuthCredential authCredential = EmailAuthProvider.getCredential(user.getEmail(), oldPass);
+        user.reauthenticate(authCredential).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                user.updatePassword(passUpdate).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Toast.makeText(getActivity(), "Đang cập nhật", Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getActivity(), "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getActivity(), "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
         });
     }
 }

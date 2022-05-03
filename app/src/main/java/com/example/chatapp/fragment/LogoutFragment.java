@@ -79,11 +79,12 @@ public class LogoutFragment extends DialogFragment {
         super.onViewCreated(view, savedInstanceState);
 
         logOut = view.findViewById(R.id.btn_log_out);
+        firebaseAuth=FirebaseAuth.getInstance();
         logOut.setOnClickListener(v -> {
-            if (FirebaseUtils.mAuth.getCurrentUser() != null) {
+            if(firebaseAuth.getCurrentUser()!=null){
                 firebaseAuth.signOut();
                 getActivity().finish();
-                Intent intent = new Intent(getActivity(), SignInActivity.class);
+                Intent intent=new Intent(getActivity(),SignInActivity.class);
                 getActivity().startActivity(intent);
             }
         });

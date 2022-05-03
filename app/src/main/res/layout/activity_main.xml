@@ -18,6 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
             android:background="@color/colorPrimary"
+            app:menu="@menu/menu_add_search"
             android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"
             app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light"/>
         <fragment
