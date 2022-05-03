@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,20 +14,18 @@ import androidx.navigation.Navigation;
 
 import com.example.chatapp.R;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link fullname#newInstance} factory method to
+ * Use the {@link PhoneAndGenderFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class fullname extends Fragment {
-
-    TextInputLayout edtFirstName, edtLastName;
-    Button btnNext;
+public class PhoneAndGenderFragment extends Fragment {
+    TextInputLayout edtPhone, edtSex;
+    Button btnNext2;
     NavController navController;
-
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -38,7 +35,7 @@ public class fullname extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public fullname() {
+    public PhoneAndGenderFragment() {
         // Required empty public constructor
     }
 
@@ -48,11 +45,11 @@ public class fullname extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment fullname.
+     * @return A new instance of fragment phone_sex.
      */
     // TODO: Rename and change types and number of parameters
-    public static fullname newInstance(String param1, String param2) {
-        fullname fragment = new fullname();
+    public static PhoneAndGenderFragment newInstance(String param1, String param2) {
+        PhoneAndGenderFragment fragment = new PhoneAndGenderFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -73,29 +70,32 @@ public class fullname extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_fullname, container, false);
+        return inflater.inflate(R.layout.fragment_phone_sex, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        btnNext2 = view.findViewById(R.id.btnNext2);
         navController = Navigation.findNavController(view);
-        edtFirstName = view.findViewById(R.id.edt_firstName);
-        edtLastName = view.findViewById(R.id.edt_lastName);
-        btnNext = view.findViewById(R.id.btn_next);
-        btnNext.setOnClickListener(v -> {
-            String Firstname = edtFirstName.getEditText().getText().toString();
-            String Lastname = edtLastName.getEditText().getText().toString();
-            if (Firstname.isEmpty() || Lastname.isEmpty()) {
+        edtPhone = view.findViewById(R.id.edt_phone);
+        edtSex = view.findViewById(R.id.edt_sex);
+
+        btnNext2.setOnClickListener(v -> {
+            String Phone = edtPhone.getEditText().getText().toString();
+            String Gender = edtSex.getEditText().getText().toString();
+
+            Bundle bundle = new Bundle(getArguments());
+            if (Gender.isEmpty() || Phone.isEmpty()) {
                 Snackbar.make(v, "Vui lòng nhập đầy đủ thông tin!", Snackbar.LENGTH_LONG).show();
                 return;
+            } else {
+                bundle.putString("gender", Gender);
+                bundle.putString("phone", Phone);
             }
-            Bundle bundle = new Bundle();
-            bundle.putString("firstname", Firstname);
-            bundle.putString("lastname", Lastname);
-            navController.navigate(R.id.action_fullnameFragment_to_addressFragment, bundle);
-
+            navController.navigate(R.id.action_addressFragment_to_usernamePasswordFragment, bundle);
         });
-    }
 
+    }
 }

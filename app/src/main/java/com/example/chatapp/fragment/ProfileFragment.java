@@ -2,23 +2,18 @@ package com.example.chatapp.fragment;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.chatapp.Models.User;
 import com.example.chatapp.R;
-import com.example.chatapp.Utils.LocationServiceTask;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -40,7 +35,7 @@ import java.util.HashMap;
  * create an instance of this fragment.
  */
 public class ProfileFragment extends Fragment {
-    TextInputLayout fullnameChange, emailChange, phoneChange, sexChange;
+    TextInputLayout fullnameChange, emailChange, phoneChange, genderChange;
     Button btnUpdate, btnChangePass;
     FirebaseDatabase fDatabase;
     FirebaseAuth fAuth;
@@ -103,15 +98,15 @@ public class ProfileFragment extends Fragment {
         fullnameChange = view.findViewById(R.id.fullName_profile);
         emailChange = view.findViewById(R.id.email_profile);
         phoneChange = view.findViewById(R.id.phone_profile);
-        sexChange = view.findViewById(R.id.sex_profile);
+        genderChange = view.findViewById(R.id.gender_profile);
         String userID = fAuth.getCurrentUser().getUid();
         fDatabase.getReference().child("users").child(userID).get().addOnSuccessListener(dataSnapshot -> {
             User user = dataSnapshot.getValue(User.class);
-            user.setUserID(userID);
-            fullnameChange.getEditText().setText(user.getFirstname() + " " + user.getLastname());
-            emailChange.getEditText().setText(user.getEmail());
-            phoneChange.getEditText().setText(user.getPhone());
-            sexChange.getEditText().setText(user.getSex());
+
+            fullnameChange.getEditText().setText(user.firstname + " " + user.lastname);
+            emailChange.getEditText().setText(user.email);
+            phoneChange.getEditText().setText(user.phone);
+            genderChange.getEditText().setText(user.gender);
         });
         btnChangePass.setOnClickListener(v -> {
             showChangePasswordDialog();

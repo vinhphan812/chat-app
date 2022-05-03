@@ -18,7 +18,6 @@ import com.example.chatapp.Utils.FirebaseUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 
@@ -28,10 +27,10 @@ import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link username_password#newInstance} factory method to
+ * Use the {@link UserNameAndPasswordFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class username_password extends Fragment {
+public class UserNameAndPasswordFragment extends Fragment {
 
     Button btnRegister;
     NavController navController;
@@ -47,7 +46,7 @@ public class username_password extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public username_password() {
+    public UserNameAndPasswordFragment() {
         // Required empty public constructor
     }
 
@@ -60,8 +59,8 @@ public class username_password extends Fragment {
      * @return A new instance of fragment username_password.
      */
     // TODO: Rename and change types and number of parameters
-    public static username_password newInstance(String param1, String param2) {
-        username_password fragment = new username_password();
+    public static UserNameAndPasswordFragment newInstance(String param1, String param2) {
+        UserNameAndPasswordFragment fragment = new UserNameAndPasswordFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -118,7 +117,7 @@ public class username_password extends Fragment {
 
                 String Firstname = store.getString("firstname");
                 String Lastname = store.getString("lastname");
-                String Sex = store.getString("sex");
+                String Gender = store.getString("gender");
                 String Phone = store.getString("phone");
 
                 FirebaseUtils.mAuth.createUserWithEmailAndPassword(Email, Password)
@@ -133,9 +132,10 @@ public class username_password extends Fragment {
 
                                 info.put("firstname", Firstname);
                                 info.put("lastname", Lastname);
-                                info.put("sex", Sex);
+                                info.put("gender", Gender);
                                 info.put("phone", Phone);
                                 info.put("email", Email);
+
                                 FirebaseUtils.databaseReference.child("users").child(FirebaseUtils.mAuth.getUid()).setValue(info).addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {

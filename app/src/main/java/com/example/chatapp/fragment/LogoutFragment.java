@@ -15,7 +15,6 @@ import androidx.fragment.app.Fragment;
 
 import com.example.chatapp.R;
 import com.example.chatapp.SignInActivity;
-import com.example.chatapp.Utils.FirebaseUtils;
 import com.google.firebase.auth.FirebaseAuth;
 
 

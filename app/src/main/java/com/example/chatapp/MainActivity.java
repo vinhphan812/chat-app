@@ -1,12 +1,9 @@
 package com.example.chatapp;
 
-import android.app.SearchManager;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.SearchView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -77,9 +74,9 @@ public class MainActivity extends AppCompatActivity {
 
         fDatabase.getReference().child("users").child(userID).get().addOnSuccessListener(dataSnapshot -> {
             User user = dataSnapshot.getValue(User.class);
-            user.setUserID(userID);
-            tvFullName.setText(user.getFirstname() + ' ' + user.getLastname());
-            tvEmail.setText(user.getEmail());
+
+            tvFullName.setText(user.firstname + ' ' + user.lastname);
+            tvEmail.setText(user.email);
         });
     }
 
