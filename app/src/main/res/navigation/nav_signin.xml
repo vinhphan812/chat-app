@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/fullnameFragment"
-        android:name="com.example.chatapp.fragment.FullnameFragment"
+        android:name="com.example.chatapp.Fragments.FullnameFragment"
         android:label="Họ Tên"
         tools:layout="@layout/fragment_fullname" >
         <action
@@ -16,7 +16,7 @@
     </fragment>
     <fragment
         android:id="@+id/addressFragment"
-        android:name="com.example.chatapp.fragment.AddressFragment"
+        android:name="com.example.chatapp.Fragments.AddressFragment"
         android:label="Địa chỉ và số điện thoại"
         tools:layout="@layout/fragment_address" >
         <action
@@ -25,7 +25,7 @@
     </fragment>
     <fragment
         android:id="@+id/usernamePasswordFragment"
-        android:name="com.example.chatapp.fragment.UsernamePasswordFragment"
+        android:name="com.example.chatapp.Fragments.UsernamePasswordFragment"
         android:label="Tên người dùng và mật khẩu"
         tools:layout="@layout/fragment_username_password" />
 </navigation>

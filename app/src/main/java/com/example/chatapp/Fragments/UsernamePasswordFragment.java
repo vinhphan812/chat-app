@@ -1,4 +1,4 @@
-package com.example.chatapp.fragment;
+package com.example.chatapp.Fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,14 +14,13 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.example.chatapp.R;
-import com.example.chatapp.Utils.FirebaseUtils;
-import com.google.android.gms.tasks.OnCompleteListener;
+import com.example.chatapp.Utils.Callback;
+import com.example.chatapp.Utils.Services;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
 
 import java.util.HashMap;
-import java.util.Map;
 
 
 
@@ -129,41 +128,30 @@ public class UsernamePasswordFragment extends Fragment {
                 Double latitude = store.getDouble("latitude", 0);
                 Double longitude = store.getDouble("longitude", 0);
 
-                FirebaseUtils.mAuth.createUserWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (!task.isSuccessful()) {
-                                    Toast.makeText(getContext(), task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                                    return;
-                                }
-                                Map<String, Object> info = new HashMap<>();
+                HashMap<String, Object> info = new HashMap<>();
 
-                                info.put("firstname", firstname);
-                                info.put("lastname", lastname);
-                                info.put("address", address);
-                                info.put("phone", phone);
-                                info.put("email", email);
-                                info.put("latitude", latitude);
-                                info.put("longitude", longitude);
+                info.put("firstname", firstname);
+                info.put("lastname", lastname);
+                info.put("address", address);
+                info.put("phone", phone);
+                info.put("email", email);
+                info.put("latitude", latitude);
+                info.put("longitude", longitude);
 
-                                FirebaseUtils.databaseReference.child("users").child(FirebaseUtils.mAuth.getUid()).setValue(info).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        View root = getActivity().getWindow().getDecorView().getRootView();
-                                        if (!task.isSuccessful()) {
-                                            Toast.makeText(getContext(), task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                                        } else {
-                                            getActivity().finish();
-                                        }
-                                    }
-                                });
 
-                            }
-                        });
+                Services.registerAccount(email, password, info, new Callback() {
+                    @Override
+                    public void onError(Exception error) {
+                        Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void call(@NonNull Task<AuthResult> task) {
+                        getActivity().finish();
+                    }
+                });
+
             }
         });
-
-
     }
 }

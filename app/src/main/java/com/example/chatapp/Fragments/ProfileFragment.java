@@ -1,4 +1,4 @@
-package com.example.chatapp.fragment;
+package com.example.chatapp.Fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -14,12 +15,13 @@ import androidx.fragment.app.Fragment;
 
 import com.example.chatapp.Models.User;
 import com.example.chatapp.R;
+import com.example.chatapp.Utils.Callback;
 import com.example.chatapp.Utils.LocationServiceTask;
+import com.example.chatapp.Utils.Services;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.HashMap;
@@ -34,7 +36,9 @@ public class ProfileFragment extends Fragment {
     Button btnUpdate;
     FirebaseDatabase fDatabase;
     FirebaseAuth fAuth;
-    DatabaseReference databaseReference;
+    NavigationView navigationView;
+
+    String userID;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -93,15 +97,20 @@ public class ProfileFragment extends Fragment {
         emailChange = view.findViewById(R.id.email_profile);
         phoneChange = view.findViewById(R.id.phone_profile);
         addressChange = view.findViewById(R.id.address_profile);
-        String userID = fAuth.getCurrentUser().getUid();
-        fDatabase.getReference().child("users").child(userID).get().addOnSuccessListener(dataSnapshot -> {
-            User user = dataSnapshot.getValue(User.class);
-            user.setUserID(userID);
-            fullnameChange.setText(user.getLastName() + " " + user.getFirstName());
-            emailChange.setText(user.getEmail());
-            phoneChange.setText(user.getPhone());
-            addressChange.setText(user.getAddress());
+        navigationView = getActivity().getWindow().findViewById(R.id.navigationView);
+
+        Services.getUserInfo(new Callback() {
+            @Override
+            public void call(User user) {
+                super.call(user);
+                userID = user.userID;
+                fullnameChange.setText(user.firstname + " " + user.lastname);
+                emailChange.setText(user.email);
+                phoneChange.setText(user.phone);
+                addressChange.setText(user.address);
+            }
         });
+
         btnUpdate.setOnClickListener(v -> {
             String fullName = fullnameChange.getText().toString();
             String email = emailChange.getText().toString();
@@ -111,33 +120,43 @@ public class ProfileFragment extends Fragment {
             String lastName = "";
             String firstName = "";
             if (fullName.split("\\w+").length > 1) {
-                firstName = fullName.substring(fullName.lastIndexOf(" ") + 1);
-                lastName = fullName.substring(0, fullName.lastIndexOf(' '));
+                lastName = fullName.substring(fullName.lastIndexOf(" ") + 1);
+                firstName = fullName.substring(0, fullName.lastIndexOf(' '));
             } else {
                 firstName = fullName;
             }
 
-            LatLng latLng = LocationServiceTask.getLatLngFromAddress(getContext(), address.toString());
-            HashMap<String, Object> newData = new HashMap<>();
-            newData.put("firstname", firstName);
-            newData.put("lastname", lastName);
-            newData.put("email", email);
-            newData.put("phone", phone);
-            newData.put("address", address);
-            newData.put("latitude", latLng.latitude);
-            newData.put("longitude", latLng.longitude);
+            LatLng latLng = LocationServiceTask.getLatLngFromAddress(getContext(), address);
 
+            HashMap<String, Object> newInfo = new HashMap<>();
+            newInfo.put("firstname", firstName);
+            newInfo.put("lastname", lastName);
+            newInfo.put("email", email);
+            newInfo.put("phone", phone);
+            newInfo.put("address", address);
+            newInfo.put("latitude", latLng.latitude);
+            newInfo.put("longitude", latLng.longitude);
 
-            databaseReference = fDatabase.getReference("users");
-            databaseReference.child(userID).updateChildren(newData).addOnCompleteListener(new OnCompleteListener<Void>() {
+            Services.updateUserInfo(newInfo, new Callback() {
                 @Override
-                public void onComplete(@NonNull Task<Void> task) {
+                public void callVoid(@NonNull Task<Void> task) {
+                    Toast.makeText(getActivity().getApplicationContext(), task.isSuccessful() ? "Change Info Successful" : task.getException().getMessage(), Toast.LENGTH_LONG).show();
+
+                    if (!task.isSuccessful())
+                        return;
+
+                    View view = navigationView.getHeaderView(0);
+
+                    TextView tvFullname = view.findViewById(R.id.name_header);
+                    TextView tvEmail = view.findViewById(R.id.email_header);
+
+                    tvFullname.setText(fullName);
+                    tvEmail.setText(email);
+
                     fullnameChange.setText(fullName);
                     emailChange.setText(email);
                     phoneChange.setText(phone);
                     addressChange.setText(address);
-
-                    Toast.makeText(getActivity().getApplicationContext(), task.isSuccessful() ? "Change Info Successfull" : task.getException().getMessage(), Toast.LENGTH_LONG);
                 }
             });
         });

@@ -7,7 +7,7 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
-import com.example.chatapp.Utils.FirebaseUtils;
+import com.example.chatapp.Utils.Services;
 
 public class SplashActivity extends Activity {
 
@@ -26,9 +26,17 @@ public class SplashActivity extends Activity {
                     e.printStackTrace();
                 }
 
-                Log.d("Login", FirebaseUtils.mAuth.getCurrentUser() == null ? "no account" : "have account");
+                Log.d("Login", Services.isLoggedIn() ? "have account" : "no account");
 
-                Intent intent = new Intent(SplashActivity.this, FirebaseUtils.mAuth.getCurrentUser() == null ? SignInActivity.class : MainActivity.class);
+//                Services.createGroup("Vinh và những người bạn", new Callback() {
+//                    @Override
+//                    public void onError(Exception error) {
+//                        super.onError(error);
+//                        Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
+//                    }
+//                });
+
+                Intent intent = new Intent(SplashActivity.this, Services.isLoggedIn() ? MainActivity.class : SignInActivity.class);
                 startActivity(intent);
                 finish();
             }

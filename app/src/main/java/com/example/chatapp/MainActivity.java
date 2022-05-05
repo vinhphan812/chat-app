@@ -15,9 +15,9 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.chatapp.Models.User;
-import com.example.chatapp.Utils.FirebaseUtils;
+import com.example.chatapp.Utils.Callback;
+import com.example.chatapp.Utils.Services;
 import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.database.FirebaseDatabase;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -27,14 +27,12 @@ public class MainActivity extends AppCompatActivity {
     DrawerLayout drawer;
     ActionBarDrawerToggle actionBarDrawerToggle;
     Toolbar toolbar;
-    FirebaseDatabase fDatabase;
     TextView tvFullName, tvEmail;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        fDatabase = FirebaseDatabase.getInstance();
 
         toolbar = findViewById(R.id.toolbarDrawer);
 
@@ -47,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
         drawer.addDrawerListener(actionBarDrawerToggle);
 
-        appBarConfiguration = new AppBarConfiguration.Builder(R.id.homeFragment, R.id.profileFragment, R.id.logOutFragment).setDrawerLayout(drawer).build();
+        appBarConfiguration = new AppBarConfiguration.Builder(R.id.homeFragment, R.id.profileFragment).setDrawerLayout(drawer).build();
 
         navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
@@ -56,14 +54,17 @@ public class MainActivity extends AppCompatActivity {
         View view = navigationView.getHeaderView(0);
         tvFullName = view.findViewById(R.id.name_header);
         tvEmail = view.findViewById(R.id.email_header);
+    }
 
-        String userID = FirebaseUtils.mAuth.getCurrentUser().getUid();
-
-        fDatabase.getReference().child("users").child(userID).get().addOnSuccessListener(dataSnapshot -> {
-            User user = dataSnapshot.getValue(User.class);
-            user.setUserID(userID);
-            tvFullName.setText(user.getFirstName() + ' ' + user.getLastName());
-            tvEmail.setText(user.getEmail());
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Services.getUserInfo(new Callback() {
+            @Override
+            public void call(User user) {
+                tvFullName.setText(user.firstname + ' ' + user.lastname);
+                tvEmail.setText(user.email);
+            }
         });
     }
 

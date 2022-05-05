@@ -1,18 +1,26 @@
-package com.example.chatapp.fragment;
+package com.example.chatapp.Fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.chatapp.Adapters.ChatAdapter;
+import com.example.chatapp.Models.Chat;
+import com.example.chatapp.Models.Message;
 import com.example.chatapp.R;
-import com.google.android.material.tabs.TabLayout;
 
-
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -21,7 +29,9 @@ import com.google.android.material.tabs.TabLayout;
  * create an instance of this fragment.
  */
 public class HomeFragment extends Fragment {
-    TabLayout tabLayout;
+    RecyclerView rvChat;
+    ChatAdapter chatAdapter;
+    TextView txtNoContent;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -70,9 +80,53 @@ public class HomeFragment extends Fragment {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        rvChat = view.findViewById(R.id.rvChat);
+//        txtNoContent = view.findViewById(R.id.no_content);
+
+        List<Chat> chats = new ArrayList<>();
+
+        chats.add(new Chat("Test", new Message("Vinh", "hi", new Date())));
+
+        chats.add(new Chat("Test 1 ", new Message("Vinh", "hi", new Date())));
+
+        chats.add(new Chat("Test 2", new Message("Vinh", "hi", new Date())));
+
+        chats.add(new Chat("Test 3", new Message("Vinh", "hi", new Date())));
+
+        ChatAdapter.Listener listener = new ChatAdapter.Listener() {
+            @Override
+            public void onClick(Chat chat) {
+
+            }
+        };
+//
+//        Services.getAllGroup(new Callback() {
+//            @Override
+//            public void call(Object list) {
+//                chatAdapter.list = (List<Chat>) list;
+//                if (chatAdapter.list.size() == 0) {
+//                    txtNoContent.setVisibility(View.VISIBLE);
+//                } else {
+//                    chatAdapter.notifyDataSetChanged();
+//                }
+//
+//            }
+//        });
+
+        chatAdapter = new ChatAdapter(getContext(), chats, listener);
+
+        Log.d("Size", chatAdapter.getItemCount() + " ");
+
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+        rvChat.setLayoutManager(layoutManager);
+
+        rvChat.setAdapter(chatAdapter);
+
+
     }
 
 }

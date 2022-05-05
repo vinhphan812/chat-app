@@ -1,4 +1,4 @@
-package com.example.chatapp.fragment;
+package com.example.chatapp.Fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,19 +14,19 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.example.chatapp.R;
-import com.example.chatapp.Utils.LocationServiceTask;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.textfield.TextInputEditText;
-
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link AddressFragment#newInstance} factory method to
+ * Use the {@link FullnameFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AddressFragment extends Fragment {
-    Button bntNext;
+public class FullnameFragment extends Fragment {
+
+    TextInputEditText tvFirstName, tvLastName;
+    Button btnNext;
     NavController navController;
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -36,7 +36,7 @@ public class AddressFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public AddressFragment() {
+    public FullnameFragment() {
         // Required empty public constructor
     }
 
@@ -46,11 +46,11 @@ public class AddressFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment AddressFragment.
+     * @return A new instance of fragment FullnameFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static AddressFragment newInstance(String param1, String param2) {
-        AddressFragment fragment = new AddressFragment();
+    public static FullnameFragment newInstance(String param1, String param2) {
+        FullnameFragment fragment = new FullnameFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -71,37 +71,40 @@ public class AddressFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_address, container, false);
+        return inflater.inflate(R.layout.fragment_fullname, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        bntNext = view.findViewById(R.id.btnNext);
         navController = Navigation.findNavController(view);
-        TextInputEditText addressEdt = view.findViewById(R.id.Address);
-        TextInputEditText phoneEdt = view.findViewById(R.id.Mobile);
+        tvFirstName = view.findViewById(R.id.tvFirstName);
+        tvLastName = view.findViewById(R.id.tvLastName);
+        btnNext = view.findViewById(R.id.btnNext);
+        btnNext.setOnClickListener(v -> {
+            String firstname =tvFirstName.getText().toString();
+            String lastname = tvLastName.getText().toString();
 
-        bntNext.setOnClickListener(v -> {
-            String address = addressEdt.getText().toString();
-            String phone = phoneEdt.getText().toString();
-
-            Bundle bundle = new Bundle(getArguments());
-
-            LatLng latLng = LocationServiceTask.getLatLngFromAddress(getContext(), address);
-
-            if (address.isEmpty() || phone.isEmpty()) {
-                Toast.makeText(getContext(),"Vui lòng nhập đầy đủ thông tin!", Toast.LENGTH_LONG).show();
+            // nếu mà tên username rỗng
+            if(firstname.isEmpty())
+            {
+                Toast.makeText(getContext(), "firstname rong", Toast.LENGTH_SHORT).show();
                 return;
-            } else {
-                bundle.putString("Address", address);
-                bundle.putString("Phone", phone);
-                bundle.putDouble("latitude", latLng.latitude);
-                bundle.putDouble("longitude", latLng.longitude);
-            }
-            navController.navigate(R.id.action_addressFragment_to_usernamePasswordFragment, bundle);
-        });
 
+            }
+            // nếu mà password để rỗng
+            if(lastname.isEmpty())
+            {
+                Toast.makeText(getContext(), "lastname rong", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            Bundle bundle = new Bundle();
+            // transfer data  to  addressfragment
+            bundle.putString("firstname", firstname);
+            bundle.putString("lastname", lastname);
+            navController.navigate(R.id.action_fullnameFragment_to_addressFragment, bundle);
+
+        });
     }
+
 }

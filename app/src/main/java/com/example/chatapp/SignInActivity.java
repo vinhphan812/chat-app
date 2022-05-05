@@ -2,6 +2,7 @@ package com.example.chatapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -10,16 +11,21 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.chatapp.Utils.FirebaseUtils;
-import com.google.android.gms.tasks.OnCompleteListener;
+import com.example.chatapp.Utils.Callback;
+import com.example.chatapp.Utils.Services;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseUser;
 
 public class SignInActivity extends AppCompatActivity {
 
     Button btnSignUp, btnSignIn;
     EditText txtUser, txtPass;
+
+    @NonNull
+    @Override
+    public MenuInflater getMenuInflater() {
+        return super.getMenuInflater();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,22 +50,21 @@ public class SignInActivity extends AppCompatActivity {
 
                 btnSignIn.setEnabled(false);
 
-                FirebaseUtils.mAuth.signInWithEmailAndPassword(user, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                Services.Login(user, pass, new Callback() {
                     @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            FirebaseUser user = FirebaseUtils.mAuth.getCurrentUser();
-
-
+                    public void call(@NonNull Task<AuthResult> task) {
+                        if (!task.isSuccessful()) {
+                            Toast.makeText(getApplicationContext(), task.getException().getMessage().toString(), Toast.LENGTH_LONG).show();
+                        } else {
                             Intent intent = new Intent(SignInActivity.this, MainActivity.class);
                             startActivity(intent);
                             finish();
-
-                        } else {
-                            Toast.makeText(getApplicationContext(), task.getException().getMessage().toString(), Toast.LENGTH_LONG).show();
                         }
 
+
+
                         btnSignIn.setEnabled(true);
+                        return;
                     }
                 });
             }
