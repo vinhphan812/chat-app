@@ -118,6 +118,8 @@ public class Services {
                 List<String> userInChat = new ArrayList<>();
                 userInChat.add(code);
 
+                database.child(FirebaseKey.UserInChat.name()).child(userID);
+
                 database.child(FirebaseKey.UserInChat.name()).child(userID).setValue(userInChat).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {

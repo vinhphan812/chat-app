@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.chatapp.Models.Chat;
 import com.example.chatapp.R;
+import com.example.chatapp.Utils.ImageAPI;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -45,10 +46,14 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
 
         holder.ChatName.setText(chat.name);
 
+        if (chat.imagePath == null) {
+            ImageAPI.getCircle(String.format("https://avatars.dicebear.com/api/initials/%s.png?size=128", chat.name), holder.ChatImage);
+        }
+
         if (chat.last_message == null) {
             holder.LastMessage.setText("not content");
         } else {
-            holder.LastMessage.setText(chat.last_message.message);
+            holder.LastMessage.setText(chat.last_message.sender + ": " + chat.last_message.message);
             String sendAt = simpleDateFormat.format(chat.last_message.send_at);
             holder.SendAt.setText(sendAt);
         }

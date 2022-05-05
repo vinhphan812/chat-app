@@ -15,11 +15,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.chatapp.Adapters.ChatAdapter;
 import com.example.chatapp.Models.Chat;
-import com.example.chatapp.Models.Message;
 import com.example.chatapp.R;
+import com.example.chatapp.Utils.Callback;
+import com.example.chatapp.Utils.Services;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 
@@ -85,17 +85,9 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         rvChat = view.findViewById(R.id.rvChat);
-//        txtNoContent = view.findViewById(R.id.no_content);
+        txtNoContent = view.findViewById(R.id.no_content);
 
         List<Chat> chats = new ArrayList<>();
-
-        chats.add(new Chat("Test", new Message("Vinh", "hi", new Date())));
-
-        chats.add(new Chat("Test 1 ", new Message("Vinh", "hi", new Date())));
-
-        chats.add(new Chat("Test 2", new Message("Vinh", "hi", new Date())));
-
-        chats.add(new Chat("Test 3", new Message("Vinh", "hi", new Date())));
 
         ChatAdapter.Listener listener = new ChatAdapter.Listener() {
             @Override
@@ -103,19 +95,19 @@ public class HomeFragment extends Fragment {
 
             }
         };
-//
-//        Services.getAllGroup(new Callback() {
-//            @Override
-//            public void call(Object list) {
-//                chatAdapter.list = (List<Chat>) list;
-//                if (chatAdapter.list.size() == 0) {
-//                    txtNoContent.setVisibility(View.VISIBLE);
-//                } else {
-//                    chatAdapter.notifyDataSetChanged();
-//                }
-//
-//            }
-//        });
+
+        Services.getAllGroup(new Callback() {
+            @Override
+            public void call(Object list) {
+                chatAdapter.list = (List<Chat>) list;
+                if (chatAdapter.list.size() == 0) {
+                    txtNoContent.setVisibility(View.VISIBLE);
+                } else {
+                    chatAdapter.notifyDataSetChanged();
+                }
+
+            }
+        });
 
         chatAdapter = new ChatAdapter(getContext(), chats, listener);
 
