@@ -18,5 +18,8 @@
     <color name="colorLightBlack">#353b48</color>
     <color name="colorRed">#F44336</color>
     <color name="colorLoading">#dddddd</color>
+    <color name="colorSecond" >#10263A</color>
+    <color name="colorTextReceived">#A8AEB0 </color>
+    <color name= "backgroundImage">#ECECEC</color>
 
 </resources>
