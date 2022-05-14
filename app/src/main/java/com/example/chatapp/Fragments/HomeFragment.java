@@ -1,11 +1,12 @@
 package com.example.chatapp.Fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,10 +15,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.chatapp.Adapters.ChatAdapter;
+import com.example.chatapp.ChatActivity;
 import com.example.chatapp.Models.Chat;
 import com.example.chatapp.R;
 import com.example.chatapp.Utils.Callback;
 import com.example.chatapp.Utils.Services;
+import com.google.firebase.database.DatabaseError;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,33 +95,74 @@ public class HomeFragment extends Fragment {
         ChatAdapter.Listener listener = new ChatAdapter.Listener() {
             @Override
             public void onClick(Chat chat) {
+                Intent intent = new Intent(getActivity(), ChatActivity.class);
 
+                intent.putExtra("chatId", chat.code);
+
+                startActivity(intent);
             }
         };
 
-        Services.getAllGroup(new Callback() {
-            @Override
-            public void call(Object list) {
-                chatAdapter.list = (List<Chat>) list;
-                if (chatAdapter.list.size() == 0) {
-                    txtNoContent.setVisibility(View.VISIBLE);
-                } else {
-                    chatAdapter.notifyDataSetChanged();
-                }
-
-            }
-        });
+        loadChats();
 
         chatAdapter = new ChatAdapter(getContext(), chats, listener);
-
-        Log.d("Size", chatAdapter.getItemCount() + " ");
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         rvChat.setLayoutManager(layoutManager);
 
         rvChat.setAdapter(chatAdapter);
-
-
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
+    private void loadChats() {
+        Services.getAllGroup(new Callback() {
+            @Override
+            public void call(Object list) {
+                List<Chat> chats = (List<Chat>) list;
+
+                txtNoContent.setVisibility(chats.size() == 0 ? View.VISIBLE : View.GONE);
+
+                if (chats.size() > 0) {
+                    chatAdapter.list = sortByLastMessage(chats);
+                    chatAdapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onError(DatabaseError error) {
+                super.onError(error);
+                Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private List<Chat> sortByLastMessage(List<Chat> list) {
+        for (int i = 0; i < list.size() - 1; i++)
+            for (int j = i + 1; j < list.size(); j++) {
+                Chat item1 = list.get(i), item2 = list.get(j);
+
+                if (item1.last_message == null || item2.last_message == null) {
+                    if(item1.last_message == null) {
+                        Chat chat = item1;
+
+                        list.set(i, item2);
+                        list.set(j, chat);
+                    }
+
+                } else if (item1.last_message.send_at < item2.last_message.send_at) {
+                    Chat chat = item1;
+
+                    list.set(i, item2);
+                    list.set(j, chat);
+                }
+
+            }
+
+
+        return list;
+    }
 }

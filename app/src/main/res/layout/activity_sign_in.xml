@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="120dp"
-        android:text="VP MATCH"
+        android:text="@string/app_name"
         android:textColor="@color/colorPrimary"
         android:textSize="48sp"
         android:textStyle="bold"
@@ -23,7 +23,7 @@
         android:id="@+id/txt_ins"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Welcome to VP match"
+        android:text="Welcome to Kmess"
         android:textColor="@color/colorPrimary"
         app:layout_constraintStart_toStartOf="@+id/txt_foodapp"
         app:layout_constraintTop_toBottomOf="@+id/txt_foodapp" />

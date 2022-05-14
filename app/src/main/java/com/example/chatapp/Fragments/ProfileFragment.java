@@ -99,17 +99,12 @@ public class ProfileFragment extends Fragment {
         addressChange = view.findViewById(R.id.address_profile);
         navigationView = getActivity().getWindow().findViewById(R.id.navigationView);
 
-        Services.getUserInfo(new Callback() {
-            @Override
-            public void call(User user) {
-                super.call(user);
-                userID = user.userID;
-                fullnameChange.setText(user.firstname + " " + user.lastname);
-                emailChange.setText(user.email);
-                phoneChange.setText(user.phone);
-                addressChange.setText(user.address);
-            }
-        });
+        User user = Services.getUserInfo();
+
+        fullnameChange.setText(user.Fullname());
+        emailChange.setText(user.email);
+        phoneChange.setText(user.phone);
+        addressChange.setText(user.address);
 
         btnUpdate.setOnClickListener(v -> {
             String fullName = fullnameChange.getText().toString();

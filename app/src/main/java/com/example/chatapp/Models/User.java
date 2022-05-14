@@ -8,6 +8,10 @@ public class User {
     public String address;
     public String userID;
 
+    public String Fullname(){
+        return String.format("%s %s", firstname, lastname);
+    }
+
 }
 
 //public class User {

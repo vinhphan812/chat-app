@@ -1,7 +1,6 @@
 package com.example.chatapp.Models;
 
 public class Chat {
-    public String id;
     public String code;
     public Boolean isDeleted;
     public String name;

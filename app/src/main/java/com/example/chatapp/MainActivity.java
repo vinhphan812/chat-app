@@ -15,7 +15,6 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.chatapp.Models.User;
-import com.example.chatapp.Utils.Callback;
 import com.example.chatapp.Utils.Services;
 import com.google.android.material.navigation.NavigationView;
 
@@ -59,13 +58,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        Services.getUserInfo(new Callback() {
-            @Override
-            public void call(User user) {
-                tvFullName.setText(user.firstname + ' ' + user.lastname);
-                tvEmail.setText(user.email);
-            }
-        });
+        User user = Services.getUserInfo();
+
+        if (user == null) return;
+
+        tvFullName.setText(user.Fullname());
+        tvEmail.setText(user.email);
     }
 
     @Override

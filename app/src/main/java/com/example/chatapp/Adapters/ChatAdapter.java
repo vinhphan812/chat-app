@@ -15,6 +15,7 @@ import com.example.chatapp.R;
 import com.example.chatapp.Utils.ImageAPI;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
@@ -22,7 +23,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
 
     public List<Chat> list;
     Listener listener;
-    String parttern = "HH:mm";
+    String patternTime = "HH:mm";
+    String patternDate = "dd/MM/yyyy";
 
 
     public ChatAdapter(Context context, List<Chat> list, Listener listener) {
@@ -42,8 +44,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Chat chat = list.get(position);
 
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(parttern);
-
         holder.ChatName.setText(chat.name);
 
         if (chat.imagePath == null) {
@@ -51,15 +51,26 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
         }
 
         if (chat.last_message == null) {
-            holder.LastMessage.setText("not content");
+            holder.LastMessage.setText(String.format("Send the first message to \"%s\"", chat.name));
+            holder.Author.setText("");
+            holder.SendAt.setText("");
         } else {
-            holder.LastMessage.setText(chat.last_message.sender + ": " + chat.last_message.message);
-            String sendAt = simpleDateFormat.format(chat.last_message.send_at);
-            holder.SendAt.setText(sendAt);
+            holder.Author.setText(chat.last_message.sender + ": ");
+            holder.LastMessage.setText(chat.last_message.message);
+            holder.SendAt.setText(makeSendTime(chat.last_message.send_at));
         }
 
         holder.itemView.setOnClickListener(v -> listener.onClick(chat));
 
+    }
+
+    private String makeSendTime(long time) {
+        Date date = new Date(time), current = new Date();
+
+        SimpleDateFormat formatDate = new SimpleDateFormat(patternDate);
+        SimpleDateFormat formatTime = new SimpleDateFormat(patternTime);
+
+        return formatDate.format(date).equals(formatDate.format(current)) ? formatTime.format(date) : formatDate.format(date);
     }
 
     @Override
@@ -71,6 +82,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
         ImageView ChatImage;
         TextView ChatName;
         TextView LastMessage;
+        TextView Author;
         TextView SendAt;
 
         public ViewHolder(@NonNull View itemView) {
@@ -79,6 +91,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
             ChatName = itemView.findViewById(R.id.ChatName);
             LastMessage = itemView.findViewById(R.id.lastMessage);
             SendAt = itemView.findViewById(R.id.send_at);
+            Author = itemView.findViewById(R.id.author);
         }
     }
 
