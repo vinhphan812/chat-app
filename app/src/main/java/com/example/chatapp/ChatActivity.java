@@ -2,13 +2,18 @@ package com.example.chatapp;
 
 import static java.lang.Thread.sleep;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -32,11 +37,23 @@ public class ChatActivity extends AppCompatActivity {
 
     EditText inputMessage;
     ImageButton btnSend;
-
+    Menu mMenu;
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.menu_info, menu);
+//        mMenu = menu;
+//        View actionView =(View) mMenu.findItem(R.id.menu_info_chat).getActionView();
+//        actionView.setOnClickListener(v -> {
+//
+//        });
+//        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
