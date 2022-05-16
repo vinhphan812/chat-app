@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Fragments.HomeFragment">
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -29,6 +30,33 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/rvChat" />
+
+        <com.getbase.floatingactionbutton.FloatingActionsMenu
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_expandDirection="up"
+            app:fab_labelStyle="@style/LabelStyle"
+            app:fab_labelsPosition="left"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/btn_join_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:fab_colorNormal="#FFF"
+                app:fab_size="mini"
+                app:fab_icon="@drawable/join_group"
+                app:fab_title="Join Group" />
+
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/btn_create_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:fab_colorNormal="#FFF"
+                app:fab_icon="@drawable/create_group"
+                app:fab_title="Create Group" />
+        </com.getbase.floatingactionbutton.FloatingActionsMenu>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>

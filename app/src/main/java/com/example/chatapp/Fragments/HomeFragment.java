@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,6 +21,7 @@ import com.example.chatapp.Models.Chat;
 import com.example.chatapp.R;
 import com.example.chatapp.Utils.Callback;
 import com.example.chatapp.Utils.Services;
+import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DatabaseError;
 
 import java.util.ArrayList;
@@ -35,7 +37,7 @@ public class HomeFragment extends Fragment {
     RecyclerView rvChat;
     ChatAdapter chatAdapter;
     TextView txtNoContent;
-
+    FloatingActionButton btnJoinGroup, btnCreateGroup;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -111,6 +113,30 @@ public class HomeFragment extends Fragment {
         rvChat.setLayoutManager(layoutManager);
 
         rvChat.setAdapter(chatAdapter);
+        btnCreateGroup=(FloatingActionButton) view.findViewById(R.id.btn_create_group);
+        btnJoinGroup=(FloatingActionButton) view.findViewById(R.id.btn_join_group);
+        btnCreateGroup.setOnClickListener(v -> {
+            showDialogCreateGroup();
+        });
+        btnJoinGroup.setOnClickListener(v -> {
+            showDialogJoinGroup();
+        });
+    }
+
+    private void showDialogJoinGroup() {
+        View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_join_group, null);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setView(view);
+        final AlertDialog dialog = builder.create();
+        builder.create().show();
+    }
+
+    private void showDialogCreateGroup() {
+        View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_create_group, null);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setView(view);
+        final AlertDialog dialog = builder.create();
+        builder.create().show();
     }
 
     @Override
@@ -146,7 +172,7 @@ public class HomeFragment extends Fragment {
                 Chat item1 = list.get(i), item2 = list.get(j);
 
                 if (item1.last_message == null || item2.last_message == null) {
-                    if(item1.last_message == null) {
+                    if (item1.last_message == null) {
                         Chat chat = item1;
 
                         list.set(i, item2);
