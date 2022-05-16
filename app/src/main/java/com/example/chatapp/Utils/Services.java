@@ -1,5 +1,6 @@
 package com.example.chatapp.Utils;
 
+import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -16,6 +17,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -32,6 +35,7 @@ public class Services {
     // region FirebaseUtils
     private static FirebaseAuth mAuth = FirebaseAuth.getInstance();
     public static DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+    public static StorageReference storageReference = FirebaseStorage.getInstance().getReference();
     // endregion
 
     // region Enum
@@ -111,10 +115,14 @@ public class Services {
         String code = makeCode();
         String userID = getUserID();
 
+        List<String> participants = new ArrayList<>();
+
+        participants.add(userID);
 
         chat.put("name", name);
         chat.put("code", code);
         chat.put("created_by", userID);
+        chat.put("participants", participants);
 
         database.child(FirebaseKey.Chats.name()).child(code).setValue(chat).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
@@ -151,6 +159,17 @@ public class Services {
         return chats;
     }
 
+    private static List<String> getParticipantsInChat(String chatId) {
+        Task<DataSnapshot> task = database.child(FirebaseKey.Chats.name()).child(chatId).child("participants").get();
+
+        while (!task.isComplete()) {
+        }
+
+        List<String> chats = (List<String>) task.getResult().getValue();
+
+        return chats;
+    }
+
     public static void getAllGroup(Callback callback) {
         String userID = getUserID();
 
@@ -160,6 +179,10 @@ public class Services {
                 database.child(FirebaseKey.UserInChat.name()).child(userID).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DataSnapshot> task) {
+                        if (!task.isSuccessful()) {
+                            Log.d("ERROR_PARSE", task.getException().getMessage());
+                            return;
+                        }
                         List<String> list = (List<String>) task.getResult().getValue();
 
                         if (list == null) list = new ArrayList<>();
@@ -215,7 +238,35 @@ public class Services {
         return chat;
     }
 
-    public static void JoinGroup(String code) {
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                if (task.getResult().getValue() == null) {
+                    callback.onError(new Exception("CHAT_NOT_EXISTS"));
+                    return;
+                }
+
+                List<String> participants = getParticipantsInChat(code);
+                List<String> chatIds = getChatOfUser();
+
+                database.child(FirebaseKey.Chats.name()).child(code).child("participants").child(participants.size() + "").setValue(userID).addOnCompleteListener(task1 -> {
+                   if(task1.isSuccessful()) {
+                       database.child(FirebaseKey.UserInChat.name()).child(userID).child((chatIds == null ? 0 : chatIds.size()) + "").setValue(code).addOnCompleteListener(task2 -> {
+                           if(task2.isSuccessful()) {
+                               callback.call();
+                               return;
+                           }
+                           callback.onError(task2.getException());
+                       });
+                        return;
+                   }
+                   callback.onError(task1.getException());
+                });
+
+
+
+
+
+            }
+        });
     }
 
     public static Boolean sendMessage(String chatId, String message) {
@@ -223,7 +274,6 @@ public class Services {
 
         User user = getUserInfo();
 
-        HashMap<String, Object> messageObj = new HashMap<>();
 
         messageObj.put("message", message);
         messageObj.put("sender", user.Fullname());
@@ -239,6 +289,10 @@ public class Services {
         });
 
         return true;
+    }
+
+    public static void sendImageMessage(String chatId, Uri path) {
+
     }
 
     private static Boolean isUserInChat(String chatId) {
@@ -270,7 +324,7 @@ public class Services {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 List<Message> messages = new ArrayList<>();
 
-                for(DataSnapshot snap : snapshot.getChildren()) {
+                for (DataSnapshot snap : snapshot.getChildren()) {
                     messages.add(snap.getValue(Message.class));
                 }
                 callback.call(messages);

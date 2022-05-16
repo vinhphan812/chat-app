@@ -7,13 +7,17 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -25,6 +29,7 @@ import com.example.chatapp.Models.Message;
 import com.example.chatapp.Utils.Callback;
 import com.example.chatapp.Utils.Services;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,11 +39,14 @@ public class ChatActivity extends AppCompatActivity {
     ProgressBar progressBar;
 
     MessageAdapter adapter;
+    ImageButton selectImage;
 
     EditText inputMessage;
     ImageButton btnSend;
 
     String chatId;
+    int RESULT_OK = 1;
+
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
@@ -75,6 +83,7 @@ public class ChatActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
         inputMessage = findViewById(R.id.inputMessage);
         btnSend = findViewById(R.id.btnSend);
+        selectImage = findViewById(R.id.select_image);
 
         setSupportActionBar(toolbar);
 
@@ -127,5 +136,30 @@ public class ChatActivity extends AppCompatActivity {
                 inputMessage.clearFocus();
             }
         });
+
+        selectImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent photoPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                photoPickerIntent.setType("image/*");
+                startActivityForResult(photoPickerIntent, RESULT_OK);
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK)
+        {
+            Uri chosenImageUri = data.getData();
+
+            Bitmap mBitmap = null;
+            try {
+                mBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), chosenImageUri);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

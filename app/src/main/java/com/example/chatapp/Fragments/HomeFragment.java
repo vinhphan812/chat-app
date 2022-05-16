@@ -94,15 +94,12 @@ public class HomeFragment extends Fragment {
 
         List<Chat> chats = new ArrayList<>();
 
-        ChatAdapter.Listener listener = new ChatAdapter.Listener() {
-            @Override
-            public void onClick(Chat chat) {
-                Intent intent = new Intent(getActivity(), ChatActivity.class);
+        ChatAdapter.Listener listener = chat -> {
+            Intent intent = new Intent(getActivity(), ChatActivity.class);
 
-                intent.putExtra("chatId", chat.code);
+            intent.putExtra("chatId", chat.code);
 
-                startActivity(intent);
-            }
+            startActivity(intent);
         };
 
         loadChats();
