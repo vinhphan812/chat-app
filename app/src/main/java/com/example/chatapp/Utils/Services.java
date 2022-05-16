@@ -215,14 +215,7 @@ public class Services {
         return chat;
     }
 
-    public static Boolean sendRequest(String id, RequestType type) {
-        return true;
-    }
-
     public static void JoinGroup(String code) {
-    }
-
-    public static void acceptRequest(String id, RequestType type) {
     }
 
     public static Boolean sendMessage(String chatId, String message) {
@@ -256,9 +249,6 @@ public class Services {
                 return true;
 
         return false;
-    }
-
-    public static void removeMessage(String chatId, String messageId) {
     }
 
     public static void getChatMessage(String id, Callback callback) {

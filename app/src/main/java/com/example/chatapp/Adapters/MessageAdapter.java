@@ -79,7 +79,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             }
             holder.senderName.setText(message.sender);
             holder.DateReceiver.setText(makeSendTime(message.send_at));
-            ImageAPI.getCircle(String.format("https://avatars.dicebear.com/api/initials/%s.png?size=36", message.sender), holder.senderImage);
+            ImageAPI.getDefaultImage(message.sender, holder.senderImage);
         }
     }
 

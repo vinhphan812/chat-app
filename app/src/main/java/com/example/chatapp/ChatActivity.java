@@ -37,7 +37,8 @@ public class ChatActivity extends AppCompatActivity {
 
     EditText inputMessage;
     ImageButton btnSend;
-    Menu mMenu;
+
+    String chatId;
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
@@ -48,12 +49,18 @@ public class ChatActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.menu_info, menu);
-//        mMenu = menu;
-//        View actionView =(View) mMenu.findItem(R.id.menu_info_chat).getActionView();
-//        actionView.setOnClickListener(v -> {
-//
-//        });
-//        return super.onCreateOptionsMenu(menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        Intent intent = new Intent(this, InfoChatActivity.class);
+
+        intent.putExtra("id", chatId);
+
+        startActivity(intent);
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -61,7 +68,7 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        String chatId = getIntent().getStringExtra("chatId");
+        chatId = getIntent().getStringExtra("chatId");
 
         toolbar = findViewById(R.id.toolbar);
         rvMessage = findViewById(R.id.rvMessage);
