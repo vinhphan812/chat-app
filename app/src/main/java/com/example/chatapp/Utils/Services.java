@@ -1,5 +1,6 @@
 package com.example.chatapp.Utils;
 
+import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -16,12 +17,16 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 public class Services {
     // region property
@@ -32,6 +37,7 @@ public class Services {
     // region FirebaseUtils
     private static FirebaseAuth mAuth = FirebaseAuth.getInstance();
     public static DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+    public static StorageReference storageReference = FirebaseStorage.getInstance().getReference();
     // endregion
 
     // region Enum
@@ -53,6 +59,17 @@ public class Services {
 
     public static FirebaseUser getUser() {
         return mAuth.getCurrentUser();
+    }
+
+    private static User getUserById(String id) {
+        Task<DataSnapshot> task = database.child(FirebaseKey.Users.name()).child(id).get();
+
+        while (!task.isComplete()) {
+        }
+
+        User user = task.getResult().getValue(User.class);
+
+        return user;
     }
 
     public static String getUserID() {
@@ -111,10 +128,14 @@ public class Services {
         String code = makeCode();
         String userID = getUserID();
 
+        List<String> participants = new ArrayList<>();
+
+        participants.add(userID);
 
         chat.put("name", name);
         chat.put("code", code);
         chat.put("created_by", userID);
+        chat.put("participants", participants);
 
         database.child(FirebaseKey.Chats.name()).child(code).setValue(chat).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
@@ -133,7 +154,7 @@ public class Services {
                             callback.onError(task.getException());
                             return;
                         }
-                        callback.call();
+                        callback.call("Create Successful!");
                     }
                 });
             }
@@ -151,25 +172,70 @@ public class Services {
         return chats;
     }
 
+    private static List<String> getParticipants(String chatId) {
+        Task<DataSnapshot> task = database.child(FirebaseKey.Chats.name()).child(chatId).child("participants").get();
+
+        while (!task.isComplete()) {
+        }
+
+        List<String> participants = (List<String>) task.getResult().getValue();
+
+        return participants;
+    }
+
+    public static List<User> getParticipantsInChat(String chatId) {
+        List<String> list = getParticipants(chatId);
+        List<User> users = new ArrayList<>();
+
+        for (String userId : list) {
+            users.add(getUserById(userId));
+        }
+
+        return users;
+    }
+
+    public static void getParticipantsInChat(String chatId, Callback callback) {
+        database.child(FirebaseKey.Chats.name()).child(chatId).child("participants").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                List<String> list = (List<String>) snapshot.getValue();
+
+                List<User> participants = new ArrayList<>();
+
+                for (String id : list) {
+                    participants.add(getUserById(id));
+                }
+
+                callback.call(participants);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
     public static void getAllGroup(Callback callback) {
         String userID = getUserID();
 
         database.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                database.child(FirebaseKey.UserInChat.name()).child(userID).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DataSnapshot> task) {
-                        List<String> list = (List<String>) task.getResult().getValue();
-
-                        if (list == null) list = new ArrayList<>();
-
-                        List<Chat> chats = new ArrayList<>();
-                        for (String id : list) {
-                            chats.add(getChat(id));
-                        }
-                        callback.call(chats);
+                database.child(FirebaseKey.UserInChat.name()).child(userID).get().addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Log.d("Parse Error", task.getException().getMessage());
+                        return;
                     }
+                    List<String> list = (List<String>) task.getResult().getValue();
+
+                    if (list == null) list = new ArrayList<>();
+
+                    List<Chat> chats = new ArrayList<>();
+                    for (String id : list) {
+                        chats.add(getChat(id));
+                    }
+                    callback.call(chats);
                 });
             }
 
@@ -181,7 +247,7 @@ public class Services {
     }
 
     private static Message getLastMessage(String chatID) {
-        Task<DataSnapshot> task = database.child(FirebaseKey.MessagesInChats.name()).child(chatID).limitToFirst(1).get();
+        Task<DataSnapshot> task = database.child(FirebaseKey.MessagesInChats.name()).child(chatID).limitToLast(1).get();
         while (!task.isComplete()) {
         }
 
@@ -215,14 +281,53 @@ public class Services {
         return chat;
     }
 
-    public static Boolean sendRequest(String id, RequestType type) {
-        return true;
+    private static boolean isExistsInGroup(String chat) {
+        Task<DataSnapshot> snap = database.child(FirebaseKey.UserInChat.name()).child(getUserID()).get();
+        while (!snap.isComplete()) {
+        }
+
+        List<String> list = (List<String>) snap.getResult().getValue();
+
+        if (list == null) return false;
+
+        for (String id : list) {
+            if (chat.equals(id)) return true;
+        }
+        return false;
     }
 
-    public static void JoinGroup(String code) {
-    }
+    public static void JoinGroup(String code, Callback callback) {
+        String userID = getUserID();
+        database.child(FirebaseKey.Chats.name()).child(code).get().addOnCompleteListener(task -> {
+            if (task.getResult().getValue() == null) {
+                callback.onError(new Exception("Group Chat Not Exists!"));
+                return;
+            }
 
-    public static void acceptRequest(String id, RequestType type) {
+            if (isExistsInGroup(code)) {
+                callback.onError(new Exception("You Had Joined Group!"));
+                return;
+            }
+
+            List<String> participants = getParticipants(code);
+            List<String> chatIds = getChatOfUser();
+
+            database.child(FirebaseKey.Chats.name()).child(code).child("participants").child(participants.size() + "").setValue(userID).addOnCompleteListener(task1 -> {
+                if (task1.isSuccessful()) {
+                    database.child(FirebaseKey.UserInChat.name()).child(userID).child((chatIds == null ? 0 : chatIds.size()) + "").setValue(code).addOnCompleteListener(task2 -> {
+                        if (task2.isSuccessful()) {
+                            callback.call("Join Success!!!");
+                            return;
+                        }
+                        callback.onError(task2.getException());
+                    });
+                    return;
+                }
+                callback.onError(task1.getException());
+            });
+
+
+        });
     }
 
     public static Boolean sendMessage(String chatId, String message) {
@@ -236,9 +341,10 @@ public class Services {
         messageObj.put("sender", user.Fullname());
         messageObj.put("send_at", new Date().getTime());
         messageObj.put("sender_id", user.userID);
+        messageObj.put("type", "text");
 
 
-        database.child(FirebaseKey.MessagesInChats.name()).child(chatId).getRef().push().setValue(messageObj).addOnCompleteListener(new OnCompleteListener<Void>() {
+        database.child(FirebaseKey.MessagesInChats.name()).child(chatId).getRef().push().setValue(messageObj).addOnCompleteListener(new OnCompleteListener<>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
 
@@ -246,6 +352,37 @@ public class Services {
         });
 
         return true;
+    }
+
+    public static void sendImageMessage(String chatId, Uri path) {
+        User user = getUserInfo();
+        String direction = chatId + "/" + UUID.randomUUID().toString();
+
+        storageReference.child(direction).putFile(path).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                if (!task.isSuccessful()) {
+                }
+
+
+                HashMap<String, Object> messageObj = new HashMap<>();
+
+                messageObj.put("message", "[Hình Ảnh]");
+                messageObj.put("sender", user.Fullname());
+                messageObj.put("send_at", new Date().getTime());
+                messageObj.put("sender_id", user.userID);
+                messageObj.put("type", "image");
+                messageObj.put("src", direction);
+
+                database.child(FirebaseKey.MessagesInChats.name()).child(chatId).getRef().push().setValue(messageObj).addOnCompleteListener(new OnCompleteListener<>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+
+                    }
+                });
+
+            }
+        });
     }
 
     private static Boolean isUserInChat(String chatId) {
@@ -256,9 +393,6 @@ public class Services {
                 return true;
 
         return false;
-    }
-
-    public static void removeMessage(String chatId, String messageId) {
     }
 
     public static void getChatMessage(String id, Callback callback) {
@@ -280,7 +414,7 @@ public class Services {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 List<Message> messages = new ArrayList<>();
 
-                for(DataSnapshot snap : snapshot.getChildren()) {
+                for (DataSnapshot snap : snapshot.getChildren()) {
                     messages.add(snap.getValue(Message.class));
                 }
                 callback.call(messages);
@@ -291,6 +425,30 @@ public class Services {
 
             }
         });
+    }
+
+    public static void getChatRT(String chatId, Callback callback) {
+        database.child(FirebaseKey.Chats.name()).child(chatId).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Chat chat = snapshot.getValue(Chat.class);
+                callback.call(chat);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    public static Uri getImageUri(String src) {
+        Task<Uri> task = storageReference.child(src).getDownloadUrl();
+
+        while (!task.isComplete()) {
+        }
+
+        return task.getResult();
     }
     // endregion
 

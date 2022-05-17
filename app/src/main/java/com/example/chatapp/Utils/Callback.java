@@ -22,6 +22,10 @@ public class Callback {
     public void call() {
     }
 
+    public void call(String message) {
+
+    }
+
     public void call(User user) {
     }
 

@@ -18,7 +18,19 @@ public class SplashActivity extends Activity {
             @Override
             public void run() {
                 super.run();
-
+//                Services.JoinGroup("YCRI2Fb5Ku", new Callback() {
+//                    @Override
+//                    public void call() {
+//                        super.call();
+//                        Toast.makeText(getApplicationContext(), "JOIN Success", Toast.LENGTH_SHORT).show();
+//                    }
+//
+//                    @Override
+//                    public void onError(Exception error) {
+//                        super.onError(error);
+//                        Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+//                    }
+//                });
 //                Services.createGroup("Vinh Phan 1", new Callback() {
 //                    @Override
 //                    public void onError(Exception error) {

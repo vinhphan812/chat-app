@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +23,7 @@ import com.example.chatapp.R;
 import com.example.chatapp.Utils.Callback;
 import com.example.chatapp.Utils.Services;
 import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.database.DatabaseError;
 
 import java.util.ArrayList;
@@ -94,15 +96,12 @@ public class HomeFragment extends Fragment {
 
         List<Chat> chats = new ArrayList<>();
 
-        ChatAdapter.Listener listener = new ChatAdapter.Listener() {
-            @Override
-            public void onClick(Chat chat) {
-                Intent intent = new Intent(getActivity(), ChatActivity.class);
+        ChatAdapter.Listener listener = chat -> {
+            Intent intent = new Intent(getActivity(), ChatActivity.class);
 
-                intent.putExtra("chatId", chat.code);
+            intent.putExtra("chatId", chat.code);
 
-                startActivity(intent);
-            }
+            startActivity(intent);
         };
 
         loadChats();
@@ -113,8 +112,8 @@ public class HomeFragment extends Fragment {
         rvChat.setLayoutManager(layoutManager);
 
         rvChat.setAdapter(chatAdapter);
-        btnCreateGroup=(FloatingActionButton) view.findViewById(R.id.btn_create_group);
-        btnJoinGroup=(FloatingActionButton) view.findViewById(R.id.btn_join_group);
+        btnCreateGroup = (FloatingActionButton) view.findViewById(R.id.btn_create_group);
+        btnJoinGroup = (FloatingActionButton) view.findViewById(R.id.btn_join_group);
         btnCreateGroup.setOnClickListener(v -> {
             showDialogCreateGroup();
         });
@@ -126,17 +125,78 @@ public class HomeFragment extends Fragment {
     private void showDialogJoinGroup() {
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_join_group, null);
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        TextInputLayout tlJoin = view.findViewById(R.id.edt_code_join_group);
+        Button btnJoin = view.findViewById(R.id.btn_join_group);
+
         builder.setView(view);
         final AlertDialog dialog = builder.create();
-        builder.create().show();
+
+        btnJoin.setOnClickListener(v -> {
+            String code = tlJoin.getEditText().getText().toString();
+
+            if (code.isEmpty()) {
+                Toast.makeText(getContext(), "Please Enter Group Code", Toast.LENGTH_SHORT).show();
+            }
+
+            Services.JoinGroup(code, new Callback() {
+                @Override
+                public void call(String message) {
+                    super.call();
+                    Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                }
+
+                @Override
+                public void onError(Exception error) {
+                    super.onError(error);
+                    Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                }
+            });
+        });
+
+        dialog.show();
     }
 
     private void showDialogCreateGroup() {
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_create_group, null);
+        TextInputLayout edtName = view.findViewById(R.id.edt_name_group);
+        Button btnCreate = view.findViewById(R.id.btn_create_group);
+
+
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+
         builder.setView(view);
         final AlertDialog dialog = builder.create();
-        builder.create().show();
+
+        btnCreate.setOnClickListener(v -> {
+            String groupName = edtName.getEditText().getText().toString();
+            if(groupName.isEmpty()) {
+                Toast.makeText(getContext(), "Please Enter Group Name", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Services.createGroup(groupName, new Callback( ) {
+                @Override
+                public void call(String message) {
+                    super.call(message);
+                    Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                }
+
+                @Override
+                public void onError(Exception error) {
+                    super.onError(error);
+                    Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                }
+            });
+
+        });
+
+        dialog.show();
     }
 
     @Override

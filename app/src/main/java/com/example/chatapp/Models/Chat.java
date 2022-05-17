@@ -1,8 +1,10 @@
 package com.example.chatapp.Models;
 
+import java.util.List;
+
 public class Chat {
     public String code;
-    public Boolean isDeleted;
+    public List<String> participants;
     public String name;
     public String created_by;
     public Message last_message;

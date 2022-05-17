@@ -47,7 +47,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
         holder.ChatName.setText(chat.name);
 
         if (chat.imagePath == null) {
-            ImageAPI.getCircle(String.format("https://avatars.dicebear.com/api/initials/%s.png?size=128", chat.name), holder.ChatImage);
+            ImageAPI.getDefaultImage(chat.name, holder.ChatImage);
         }
 
         if (chat.last_message == null) {

@@ -27,6 +27,11 @@ public class ImageAPI {
         Picasso.get().load(path).into(view);
     }
 
+    static public void getDefaultImage(String name, ImageView view) {
+        String path = String.format("https://avatars.dicebear.com/api/initials/%s.png?size=128", name);
+        Picasso.get().load(path).transform(new CircleTransform()).into(view);
+    }
+
     /**
      * Get normal image with options size, then load it to background View.
      *
@@ -55,8 +60,8 @@ public class ImageAPI {
     /**
      * Get and transform rounded image, then load it to ImageView
      *
-     * @param path   is a string path image.
-     * @param view   is a ImageView need render image.
+     * @param path is a string path image.
+     * @param view is a ImageView need render image.
      */
     static public void getCorner(String path, ImageView view) {
         Picasso.get().load(path).transform(new RoundedTransformation(50, 0)).into(view);
@@ -65,10 +70,10 @@ public class ImageAPI {
     /**
      * Get and transform circle image, then load it to ImageView
      *
-     * @param path   is a string path image.
-     * @param view   is a ImageView need render image.
+     * @param path is a string path image.
+     * @param view is a ImageView need render image.
      */
-    static public void getCircle(String path,  ImageView view) {
+    static public void getCircle(String path, ImageView view) {
         Picasso.get().load(path).transform(new CircleTransform()).into(view);
     }
 
