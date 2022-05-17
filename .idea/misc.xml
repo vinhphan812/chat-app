@@ -7,13 +7,19 @@
         <entry key="..\:/Android/ChatApp/app/src/main/res/drawable/background_content_top.xml" value="0.3651041666666667" />
         <entry key="..\:/Android/ChatApp/app/src/main/res/drawable/ic_send.xml" value="0.20729166666666668" />
         <entry key="..\:/Android/ChatApp/app/src/main/res/layout/activity_change_password.xml" value="0.11277173913043478" />
-        <entry key="..\:/Android/ChatApp/app/src/main/res/layout/activity_chat.xml" value="0.3395348837209302" />
+        <entry key="..\:/Android/ChatApp/app/src/main/res/layout/activity_chat.xml" value="0.22" />
+        <entry key="..\:/Android/ChatApp/app/src/main/res/layout/activity_info_chat.xml" value="0.25" />
         <entry key="..\:/Android/ChatApp/app/src/main/res/layout/activity_main.xml" value="0.254981884057971" />
         <entry key="..\:/Android/ChatApp/app/src/main/res/layout/activity_sign_in.xml" value="0.19114583333333332" />
         <entry key="..\:/Android/ChatApp/app/src/main/res/layout/activity_sign_up.xml" value="0.1" />
         <entry key="..\:/Android/ChatApp/app/src/main/res/layout/activity_sign_up2.xml" value="0.1" />
         <entry key="..\:/Android/ChatApp/app/src/main/res/layout/activity_splash.xml" value="0.28532608695652173" />
         <entry key="..\:/Android/ChatApp/app/src/main/res/layout/chat_item.xml" value="0.33" />
+        <entry key="..\:/Android/ChatApp/app/src/main/res/layout/dialog_create_group.xml" value="0.1921875" />
+        <entry key="..\:/Android/ChatApp/app/src/main/res/layout/dialog_edit_group.xml" value="0.1921875" />
+        <entry key="..\:/Android/ChatApp/app/src/main/res/layout/dialog_join_group.xml" value="0.15104166666666666" />
+        <entry key="..\:/Android/ChatApp/app/src/main/res/layout/dialog_member_group.xml" value="0.15104166666666666" />
+        <entry key="..\:/Android/ChatApp/app/src/main/res/layout/dialog_out_group.xml" value="0.25" />
         <entry key="..\:/Android/ChatApp/app/src/main/res/layout/fragment_address.xml" value="0.18697916666666667" />
         <entry key="..\:/Android/ChatApp/app/src/main/res/layout/fragment_fullname.xml" value="0.3489583333333333" />
         <entry key="..\:/Android/ChatApp/app/src/main/res/layout/fragment_home.xml" value="0.25" />
@@ -22,34 +28,14 @@
         <entry key="..\:/Android/ChatApp/app/src/main/res/layout/fragment_notification.xml" value="0.3489583333333333" />
         <entry key="..\:/Android/ChatApp/app/src/main/res/layout/fragment_profile.xml" value="0.19114583333333332" />
         <entry key="..\:/Android/ChatApp/app/src/main/res/layout/fragment_username_password.xml" value="0.19114583333333332" />
-        <entry key="..\:/Android/ChatApp/app/src/main/res/layout/message_item.xml" value="0.5" />
+        <entry key="..\:/Android/ChatApp/app/src/main/res/layout/item_member.xml" value="0.67" />
+        <entry key="..\:/Android/ChatApp/app/src/main/res/layout/message_item.xml" value="0.33" />
         <entry key="..\:/Android/ChatApp/app/src/main/res/layout/nav_header_main.xml" value="0.19114583333333332" />
         <entry key="..\:/Android/ChatApp/app/src/main/res/layout/received_message_item.xml" value="0.3489583333333333" />
-        <entry key="..\:/Android/ChatApp/app/src/main/res/layout/row_complete.xml" value="0.1" />
+        <entry key="..\:/Android/ChatApp/app/src/main/res/layout/row_complete.xml" value="0.25" />
         <entry key="..\:/Android/ChatApp/app/src/main/res/layout/sent_message_item.xml" value="0.3489583333333333" />
         <entry key="..\:/Android/ChatApp/app/src/main/res/menu/main_menu.xml" value="0.19114583333333332" />
-        <entry key="..\:/DADD/chat-app/app/src/main/res/drawable/bg_green_border_button.xml" value="0.147" />
-        <entry key="..\:/DADD/chat-app/app/src/main/res/drawable/bg_label.xml" value="0.147" />
-        <entry key="..\:/DADD/chat-app/app/src/main/res/drawable/bg_red_border_button.xml" value="0.147" />
-        <entry key="..\:/DADD/chat-app/app/src/main/res/drawable/join_group.xml" value="0.147" />
-        <entry key="..\:/DADD/chat-app/app/src/main/res/layout/activity_change_password.xml" value="0.22962962962962963" />
-        <entry key="..\:/DADD/chat-app/app/src/main/res/layout/activity_chat.xml" value="0.22962962962962963" />
-        <entry key="..\:/DADD/chat-app/app/src/main/res/layout/activity_info_chat.xml" value="0.2359375" />
-        <entry key="..\:/DADD/chat-app/app/src/main/res/layout/activity_main.xml" value="0.25" />
-        <entry key="..\:/DADD/chat-app/app/src/main/res/layout/activity_sign_in.xml" value="0.22962962962962963" />
-        <entry key="..\:/DADD/chat-app/app/src/main/res/layout/activity_splash.xml" value="0.25" />
-        <entry key="..\:/DADD/chat-app/app/src/main/res/layout/dialog_create_group.xml" value="0.25" />
-        <entry key="..\:/DADD/chat-app/app/src/main/res/layout/dialog_edit_group.xml" value="0.25" />
-        <entry key="..\:/DADD/chat-app/app/src/main/res/layout/dialog_join_group.xml" value="0.25" />
-        <entry key="..\:/DADD/chat-app/app/src/main/res/layout/dialog_member_group.xml" value="0.25" />
-        <entry key="..\:/DADD/chat-app/app/src/main/res/layout/dialog_out_group.xml" value="0.25" />
-        <entry key="..\:/DADD/chat-app/app/src/main/res/layout/fragment_home.xml" value="0.25" />
-        <entry key="..\:/DADD/chat-app/app/src/main/res/layout/fragment_profile.xml" value="0.25" />
-        <entry key="..\:/DADD/chat-app/app/src/main/res/layout/fragment_username_password.xml" value="0.22962962962962963" />
-        <entry key="..\:/DADD/chat-app/app/src/main/res/layout/item_member.xml" value="0.25" />
-        <entry key="..\:/DADD/chat-app/app/src/main/res/layout/message_item.xml" value="0.25" />
-        <entry key="..\:/DADD/chat-app/app/src/main/res/layout/row_complete.xml" value="0.25" />
-        <entry key="..\:/DADD/chat-app/app/src/main/res/menu/menu_info.xml" value="0.2" />
+        <entry key="..\:/Android/ChatApp/app/src/main/res/menu/menu_info.xml" value="0.1921875" />
         <entry key="..\:/Users/ADMIN/AndroidStudioProjects/ChatApp/app/src/main/res/drawable/badge_background.xml" value="0.26615384615384613" />
         <entry key="..\:/Users/ADMIN/AndroidStudioProjects/ChatApp/app/src/main/res/drawable/bg_green_border_button.xml" value="0.26615384615384613" />
         <entry key="..\:/Users/ADMIN/AndroidStudioProjects/ChatApp/app/src/main/res/drawable/bg_green_button.xml" value="0.26615384615384613" />
@@ -74,7 +60,7 @@
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

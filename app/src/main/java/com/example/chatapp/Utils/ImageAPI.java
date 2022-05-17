@@ -29,7 +29,7 @@ public class ImageAPI {
 
     static public void getDefaultImage(String name, ImageView view) {
         String path = String.format("https://avatars.dicebear.com/api/initials/%s.png?size=128", name);
-        Picasso.get().load(path).into(view);
+        Picasso.get().load(path).transform(new CircleTransform()).into(view);
     }
 
     /**

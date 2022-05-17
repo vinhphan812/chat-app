@@ -22,9 +22,10 @@
             app:srcCompat="@drawable/badge_background" />
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
             <TextView
                 android:id="@+id/senderName"
                 android:layout_width="wrap_content"
@@ -32,6 +33,7 @@
                 android:layout_marginTop="4dp"
                 android:textColor="@color/colorPrimary"
                 android:textSize="10sp" />
+
             <TextView
                 android:id="@+id/textMessageReceiver"
                 android:layout_width="wrap_content"
@@ -40,6 +42,11 @@
                 android:padding="12dp"
                 android:textColor="@color/white"
                 android:textSize="13sp" />
+
+            <ImageView
+                android:id="@+id/imageReceiver"
+                android:layout_width="150dp"
+                android:layout_height="200dp" />
 
             <TextView
                 android:id="@+id/DateReceiver"
@@ -69,9 +76,17 @@
             android:padding="12dp"
             android:textColor="@color/white"
             android:textSize="13dp"
+            app:layout_constraintBottom_toTopOf="@+id/DateSend"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/DateSend"/>
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/sendImage"
+            android:layout_width="150dp"
+            android:layout_height="200dp"
+            app:layout_constraintBottom_toTopOf="@+id/DateSend"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/DateSend"

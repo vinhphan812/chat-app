@@ -17,13 +17,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageView
+        android:id="@+id/admin_icon"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:src="@drawable/baseline_admin_panel_settings_black_24dp"
+        app:layout_constraintBottom_toBottomOf="@+id/img_member"
+        app:layout_constraintEnd_toEndOf="@+id/img_member" />
+
     <TextView
         android:id="@+id/tv_name_member"
-        android:layout_width="250dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="TextView"
         android:textColor="@color/black"
-        android:fontFamily="sans-serif-black"
         android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/img_member"

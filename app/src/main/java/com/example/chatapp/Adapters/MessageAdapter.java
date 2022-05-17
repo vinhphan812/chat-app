@@ -1,6 +1,7 @@
 package com.example.chatapp.Adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,16 +25,17 @@ import java.util.List;
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHolder> {
     Context context;
     public List<Message> list;
-
+    LongListener listener;
 
     String patternTime = "HH:mm";
     String patternDate = "dd/MM/yyyy";
     String patternDateTime = "HH:mm dd/MM/yyyy";
 
 
-    public MessageAdapter(Context context, List<Message> list) {
+    public MessageAdapter(Context context, List<Message> list, LongListener listener) {
         this.context = context;
         this.list = list;
+        this.listener = listener;
     }
 
     @NonNull
@@ -45,31 +47,44 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        Log.d("POSITION", getItemCount() + " " + position);
         Message curMessage = null;
         Message message = list.get(position);
         Message nextMessage = null;
-        if(position > 0) curMessage = list.get(position - 1);
+        if (position > 0) curMessage = list.get(position - 1);
         if (position + 1 < getItemCount()) nextMessage = list.get(position + 1);
 
-        if (message.sender_id != null && message.sender_id.equals(Services.getUserID())) {
+        if (message.sender_id.equals(Services.getUserID())) {
             holder.receiver.setVisibility(View.GONE);
 
-            holder.textMessageSend.setText(message.message);
+            if(message.type.equals("text")) {
+                holder.textMessageSend.setText(message.message);
+                holder.sendImage.setVisibility(View.GONE);
+            } else {
+                holder.textMessageSend.setVisibility(View.GONE);
 
-            if(nextMessage != null && message.sender_id.equals(nextMessage.sender_id) && nextMessage.send_at - message.send_at < 10000)
-            {
+                ImageAPI.getCorner(Services.getImageUri(message.src).toString(), holder.sendImage);
+
+            }
+
+
+            if (nextMessage != null && message.sender_id.equals(nextMessage.sender_id) && nextMessage.send_at - message.send_at < 10000) {
                 holder.DateSend.setVisibility(View.GONE);
             }
 
             holder.DateSend.setText(makeSendTime(message.send_at));
-
-
         } else {
             holder.send.setVisibility(View.GONE);
 
-            holder.textMessageReceiver.setText(message.message);
+            if(message.type.equals("text")) {
+                holder.textMessageReceiver.setText(message.message);
+                holder.imageReceiver.setVisibility(View.GONE);
+            } else {
+                holder.textMessageReceiver.setVisibility(View.GONE);
+                ImageAPI.getCorner(Services.getImageUri(message.src).toString(), holder.imageReceiver);
+            }
 
-            if(curMessage != null && message.sender_id.equals(curMessage.sender_id)) {
+            if (curMessage != null && message.sender_id.equals(curMessage.sender_id)) {
                 holder.senderName.setVisibility(View.GONE);
             }
 
@@ -81,6 +96,16 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             holder.DateReceiver.setText(makeSendTime(message.send_at));
             ImageAPI.getDefaultImage(message.sender, holder.senderImage);
         }
+
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (message.type == "text")
+                    listener.onClick(message);
+
+                return true;
+            }
+        });
     }
 
     private String makeSendTime(long time) {
@@ -102,7 +127,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView senderName, textMessageReceiver, DateReceiver, textMessageSend, DateSend;
         LinearLayout receiver;
-        ImageView senderImage;
+        ImageView senderImage, imageReceiver, sendImage;
         ConstraintLayout send;
 
         public ViewHolder(@NonNull View itemView) {
@@ -115,6 +140,12 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             DateSend = itemView.findViewById(R.id.DateSend);
             receiver = itemView.findViewById(R.id.receiver);
             send = itemView.findViewById(R.id.send);
+            sendImage = itemView.findViewById(R.id.sendImage);
+            imageReceiver = itemView.findViewById(R.id.imageReceiver);
         }
+    }
+
+    public interface LongListener {
+        void onClick(Message message);
     }
 }
