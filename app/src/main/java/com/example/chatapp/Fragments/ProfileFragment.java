@@ -1,5 +1,7 @@
 package com.example.chatapp.Fragments;
 
+import static com.example.chatapp.Utils.Services.mAuth;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.example.chatapp.Models.User;
@@ -21,7 +24,10 @@ import com.example.chatapp.Utils.Services;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.auth.FirebaseAuth;
+import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.HashMap;
@@ -33,11 +39,9 @@ import java.util.HashMap;
  */
 public class ProfileFragment extends Fragment {
     EditText fullnameChange, emailChange, phoneChange, addressChange;
-    Button btnUpdate;
+    Button btnUpdate, btnChangePass;
     FirebaseDatabase fDatabase;
-    FirebaseAuth fAuth;
     NavigationView navigationView;
-
     String userID;
 
     // TODO: Rename parameter arguments, choose names that match
@@ -91,8 +95,7 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         fDatabase = FirebaseDatabase.getInstance();
-        fAuth = FirebaseAuth.getInstance();
-        btnUpdate = view.findViewById(R.id.btn_update);
+           btnUpdate = view.findViewById(R.id.btn_update);
         fullnameChange = view.findViewById(R.id.fullName_profile);
         emailChange = view.findViewById(R.id.email_profile);
         phoneChange = view.findViewById(R.id.phone_profile);
@@ -155,5 +158,65 @@ public class ProfileFragment extends Fragment {
                 }
             });
         });
+        btnChangePass = view.findViewById(R.id.btn_change_password);
+        btnChangePass.setOnClickListener(v -> {
+            v = LayoutInflater.from(getContext()).inflate(R.layout.dialog_change_pass, null);
+
+            TextInputLayout edtOldPass = v.findViewById(R.id.edt_old_pass);
+            TextInputLayout edtNewPass = v.findViewById(R.id.edt_new_pass);
+            TextInputLayout edtConfirmPass = v.findViewById(R.id.edt_pass_confirm);
+
+            Button btnChangePass = v.findViewById(R.id.btn_change_password);
+
+            final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setView(v);
+            final AlertDialog dialog = builder.create();
+
+            btnChangePass.setOnClickListener(v1 -> {
+                String oldPass = edtOldPass.getEditText().getText().toString();
+                String newPass = edtNewPass.getEditText().getText().toString();
+                String confirm = edtConfirmPass.getEditText().getText().toString();
+                if (oldPass.isEmpty()) {
+                    Toast.makeText(getContext(), "Please re-enter the old password!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (newPass.length() < 8) {
+                    Toast.makeText(getContext(), "Password must be 8 characters or more!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (newPass.equals(oldPass)) {
+                    Toast.makeText(getContext(), "The new password and the old password cannot be the same!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if(!newPass.equals(confirm)) {
+                    Toast.makeText(getContext(), "Incorrect confirm password!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                updatePassword(oldPass, newPass, new Callback() {
+                    @Override
+                    public void call() {
+                        super.call();
+                        dialog.dismiss();
+                    }
+                });
+            });
+            dialog.show();
+        });
+    }
+
+    private void updatePassword(String oldPass, String newPass, Callback callback) {
+        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+        AuthCredential authCredential = EmailAuthProvider.getCredential(firebaseUser.getEmail(), oldPass);
+        firebaseUser.reauthenticate(authCredential).addOnSuccessListener(unused -> {
+            firebaseUser.updatePassword(newPass).addOnSuccessListener(unused1 -> {
+                Toast.makeText(getActivity(), "Password updated!!!", Toast.LENGTH_SHORT).show();
+            }).addOnFailureListener(e -> {
+                Toast.makeText(getActivity(), "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+            });
+        }).addOnFailureListener(e -> {
+            Toast.makeText(getActivity(), "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+        });
+        callback.call();
     }
 }

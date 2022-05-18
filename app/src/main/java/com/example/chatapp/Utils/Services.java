@@ -30,7 +30,7 @@ public class Services {
     // endregion
 
     // region FirebaseUtils
-    private static FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    public static FirebaseAuth mAuth = FirebaseAuth.getInstance();
     public static DatabaseReference database = FirebaseDatabase.getInstance().getReference();
     // endregion
 
