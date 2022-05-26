@@ -30,8 +30,8 @@ import java.util.UUID;
 
 public class Services {
     // region property
-    private static final int CODE_LENGTH = 10;
-    private static String characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private static final int CODE_LENGTH = 5;
+    private static String characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     // endregion
 
     // region FirebaseUtils
@@ -211,6 +211,20 @@ public class Services {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    public static void ChangeNameGroup(String chatId, String newName, Callback callback){
+        database.child(FirebaseKey.Chats.name()).child(chatId).child("name").setValue(newName).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(!task.isSuccessful()) {
+                    callback.onError(task.getException());
+                    return;
+                }
+                callback.call("Change Successful");
 
             }
         });

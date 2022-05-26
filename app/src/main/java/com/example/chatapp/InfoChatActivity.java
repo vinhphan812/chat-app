@@ -22,6 +22,7 @@ import com.example.chatapp.Models.User;
 import com.example.chatapp.Utils.Callback;
 import com.example.chatapp.Utils.ImageAPI;
 import com.example.chatapp.Utils.Services;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +66,6 @@ public class InfoChatActivity extends AppCompatActivity {
                 adapter.AdminId = chat.created_by;
             }
         });
-
 
 
         Services.getParticipantsInChat(chatId, new Callback() {
@@ -126,7 +126,7 @@ public class InfoChatActivity extends AppCompatActivity {
         title.setText(adapter.AdminId.equals(Services.getUserID()) ? "Delete Group" : "Leave Group");
 
         btnOut.setOnClickListener(v -> {
-            if(adapter.AdminId.equals(Services.getUserID())){
+            if (adapter.AdminId.equals(Services.getUserID())) {
 
             }
         });
@@ -140,8 +140,30 @@ public class InfoChatActivity extends AppCompatActivity {
     private void showDialogEditGroup() {
         View view = LayoutInflater.from(InfoChatActivity.this).inflate(R.layout.dialog_edit_group, null);
         final AlertDialog.Builder builder = new AlertDialog.Builder(InfoChatActivity.this);
+        TextInputLayout edtName = view.findViewById(R.id.edt_name_edit_group);
+        Button btnChange = view.findViewById(R.id.btn_edit_group);
         builder.setView(view);
         final AlertDialog dialog = builder.create();
-        builder.create().show();
+
+        btnChange.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String name = edtName.getEditText().getText().toString();
+                Services.ChangeNameGroup(chatId, name, new Callback() {
+                    @Override
+                    public void call(String message) {
+                        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                    }
+
+                    @Override
+                    public void onError(Exception error) {
+                        Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+
+        dialog.show();
     }
 }
